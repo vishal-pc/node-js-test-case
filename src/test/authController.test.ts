@@ -2,6 +2,16 @@ import request from "supertest";
 import app from "../server";
 
 describe("Auth Routes", () => {
+  it("should return status 400 for missing fullName field", async () => {
+    const res = await request(app).post("/api/v1/user-register").send({
+      email: "johndoe@example.com",
+      password: "Password@123",
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("success", false);
+  });
+
   it("should return status 400 for invalid email format", async () => {
     const res = await request(app).post("/api/v1/user-register").send({
       email: "invalidemail",
@@ -40,6 +50,15 @@ describe("Auth Routes", () => {
     expect(res.body).toHaveProperty("success", true);
   });
 
+  it("should return status 400 for missing email field ", async () => {
+    const res = await request(app).post("/api/v1/user-login").send({
+      password: "Password@123",
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("success", false);
+  });
+
   it("should return status 404 for user not found", async () => {
     const res = await request(app)
       .post("/api/v1/user-login")
@@ -54,7 +73,7 @@ describe("Auth Routes", () => {
       .post("/api/v1/user-login")
       .send({ password: "Password@1234" });
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("success", false);
   });
 
